@@ -16,6 +16,8 @@ This software is open domain and may be freely modified and distributed.
 
 Requires: pygtk2
 
+Usage: pyupdatesd [--display :0.0 --help --debug --testing]
+
 --Kirsle
 http://sh.kirsle.net
 """
@@ -56,9 +58,50 @@ import gtk
 import gobject
 import pynotify
 
+import getopt
+import sys
+import os
 import commands
 import subprocess
 from time import time
+
+# Command-line options.
+try:
+    options, remainder = getopt.getopt(sys.argv[1:], 'hdt', [
+        'debug',
+        'help',
+        'testing',
+        'display='
+    ])
+except:
+    print "Unrecognized options given, try " + sys.argv[0] + " --help"
+    exit(1)
+
+debug   = False
+testing = False
+def say(*message):
+    if debug:
+        print ' '.join(map(lambda x: str(x), message))
+
+def usage():
+    print "Usage: " + sys.argv[0] + " [--display :0.0 --help --debug --testing]"
+    print "Use --testing to force the script to show the notification icon."
+    exit(1)
+
+# Parse the options
+for opt in options:
+    if opt[0] == '--debug':
+        debug = True
+        say("Debug mode activated")
+    elif opt[0] == '--display' or opt[0] == '-d':
+        os.environ["DISPLAY"] = opt[1]
+        say("Set environment $DISPLAY to", opt[1])
+    elif opt[0] == '--testing' or opt[0] == '-t':
+        testing = True
+        debug   = True
+        say("Testing the notification applet")
+    elif opt[0] == '--help' or opt[0] == '-h':
+        usage()
 
 def do_updates():
     """Show your graphical update manager."""
@@ -83,7 +126,8 @@ tray.set_tooltip(c['title'])
 tray.set_visible(False)
 tray.connect('activate', onClick)
 
-next_check = int(time()) + c['interval']
+next_check = int(time()) # First check is immediately on startup
+say("First check:", next_check)
 def main_loop():
     # Time to check?
     global next_check
@@ -91,9 +135,21 @@ def main_loop():
         status, output = commands.getstatusoutput(c['check'])
         status = status >> 8
 
+        say("Executed command:", c['check'])
+        say("Result status:", status)
+        say("Command output:")
+        say(output)
+
+        if testing:
+            say("Test mode: force the result to show available updates")
+            status = 100
+
         # Updates?
         if status == 100:
+            say("Result status indicates updates are available!")
             if tray.get_visible() == False:
+                say("Show the notification pop-up")
+
                 # Only show notification the first time.
                 show_notify()
             tray.set_visible(True)
