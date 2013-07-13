@@ -47,7 +47,7 @@ c = dict(
     notify = "/usr/bin/notify-send",
 
     # Command to run for your graphical updater (i.e. yumex, gpk-update-viewer)
-    gui = "/usr/bin/yumex",
+    gui = "/usr/bin/yumex --update-only",
 )
 
 ################################################################################
