@@ -49,7 +49,7 @@ c = dict(
 
     # Command to run for your graphical updater (i.e. yumex, gpk-update-viewer)
     yumgui = "/usr/bin/yumex --update-only",
-    dnfgui = "/usr/bin/xfce4-terminal -x sudo dnf upgrade"
+    dnfgui = "/usr/bin/xfce4-terminal --hold --execute sudo dnf upgrade"
 )
 dnfpath = "/usr/bin/dnf"
 
