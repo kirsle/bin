@@ -1,8 +1,7 @@
 " vimrc, http://sh.kirsle.net/
-" Last Modified 2013/06/10
+" Last Modified 2013/09/27
 
 set encoding=utf8             " Unicode support
-lang en_US                    " English
 set nocompatible              " use vim defaults
 set background=dark           " my terminal has a black background
 set tabstop=4                 " number of spaces for tab character
@@ -19,6 +18,7 @@ set showcmd                   " display incomplete commands
 set ttyfast                   " smoother changes
 set autowrite                 " automatic saving when quitting and switching buffer
 set autoread                  " automatic read when file is modified from outside
+syntax on                     " syntax highlighting
 
 " When vimrc is edited, reload it.
 autocmd! BufWritePost .vimrc source ~/.vimrc
@@ -65,12 +65,6 @@ augroup resCur
 	autocmd BufWinEnter * call ResCur()
 augroup END
 
-syntax on                     " syntax highlighting
-
-" check perl code with :make
-autocmd FileType perl set makeprg=perl\ -c\ %\ $*
-autocmd FileType perl set errorformat=%f:%l%m
-
 " make tab in v mode indent code
 vmap <tab> >gv
 vmap <s-tab> <gv
@@ -78,19 +72,6 @@ vmap <s-tab> <gv
 " make tab in normal mode indent code
 nmap <tab> I<tab><esc>
 nmap <s-tab> ^i<bs><esc>
-
-" syntax highlight pod documentation correctly
-let perl_include_pod = 1
-
-" syntax color complex things like @{${"foo"}}
-let perl_extended_vars = 1
-
-" expand tabs for python code
-autocmd BufRead,BufNewFile *.py set expandtab
-
-" Make sure the syntax is always right, even when in the middle of
-" a huge javascript inside an html file.
-autocmd BufEnter * :syntax sync fromstart
 
 " change the bash title so the filename is first in the title bar
 let &titlestring = expand("%:t") . " - vim on " . hostname()
@@ -106,3 +87,40 @@ endif
 au BufNewFile,BufRead *.panel set filetype=html
 au BufNewFile,BufRead *.tt set filetype=html
 au BufNewFile,BufRead *.tp set filetype=html
+
+""""""""""""""""""""""""
+""" General coding stuff
+""""""""""""""""""""""""
+
+" git commit messages
+autocmd Filetype gitcommit setlocal spell textwidth=72
+
+" Make sure the syntax is always right, even when in the middle of
+" a huge javascript inside an html file.
+autocmd BufEnter * :syntax sync fromstart
+
+" Map F12 to sync the syntax too.
+noremap <F12> <Esc>:syntax sync fromstart<CR>
+inoremap <F12> <C-o>:syntax sync fromstart<CR>
+
+""""""""""""""
+""" Perl stuff
+""""""""""""""
+
+" check perl code with :make
+autocmd FileType perl set makeprg=perl\ -c\ %\ $*
+autocmd FileType perl set errorformat=%f:%l%m
+
+" syntax highlight pod documentation correctly
+let perl_include_pod = 1
+
+" syntax color complex things like @{${"foo"}}
+let perl_extended_vars = 1
+
+""""""""""""""""
+""" Python stuff
+""""""""""""""""
+
+" expand tabs for python code
+autocmd BufRead,BufNewFile *.py set expandtab
+
