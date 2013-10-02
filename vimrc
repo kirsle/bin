@@ -95,6 +95,9 @@ au BufNewFile,BufRead *.tp set filetype=html
 " git commit messages
 autocmd Filetype gitcommit setlocal spell textwidth=72
 
+" reStructuredText
+autocmd FileType rst set tabstop=3 softtabstop=3 shiftwidth=3 expandtab
+
 " Make sure the syntax is always right, even when in the middle of
 " a huge javascript inside an html file.
 autocmd BufEnter * :syntax sync fromstart
