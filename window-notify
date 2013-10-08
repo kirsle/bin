@@ -22,26 +22,26 @@ import subprocess
 
 # Config
 config = dict(
-	# Icon to use
-	icon = "/usr/share/icons/gnome/48x48/status/user-available.png",
+    # Icon to use
+    icon = "/usr/share/icons/gnome/48x48/status/user-available.png",
 
-	# Title
-	title = "Window Notification",
+    # Title
+    title = "Window Notification:",
 )
 
 if len(argv) == 1:
-	print "Usage: window-notify 'Title to watch for' 'etc...'"
-	exit()
+    print "Usage: window-notify 'Title to watch for' 'etc...'"
+    exit()
 
 titles = argv[1:]
 
 def notify(title):
-	subprocess.call(["notify-send",
-		"-a", __name__,
-		"-i", config['icon'],
-		"Window Notification:",
-		title,
-	])
+    subprocess.call(["notify-send",
+        "-a", __name__,
+        "-i", config['icon'],
+        config['title'],
+        title,
+    ])
 
 # Keep track of which titles we currently see, so we don't notify a ton
 # of times for the same title.
@@ -49,13 +49,13 @@ visible = { key: False for key in titles }
 
 # Begin watching.
 while True:
-	time.sleep(0.1)
-	output = subprocess.check_output(["wmctrl", "-l"])
-	for title in titles:
-		if title in output:
-			# Window exists, did we already notify?
-			if not visible[title]:
-				visible[title] = True
-				notify(title)
-		else:
-			visible[title] = False
+    time.sleep(0.1)
+    output = subprocess.check_output(["wmctrl", "-l"])
+    for title in titles:
+        if title in output:
+            # Window exists, did we already notify?
+            if not visible[title]:
+                visible[title] = True
+                notify(title)
+        else:
+            visible[title] = False
