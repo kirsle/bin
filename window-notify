@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+
+# window-notify: Watch for windows with particular titles and pop up a
+# desktop notification when they appear.
+#
+# Useful for certain web apps that don't properly handle desktop notifications.
+# You'll need to make sure you keep the app tab on a window by itself so that
+# its title is always visible to the window manager.
+#
+# Usage: window-notify '* Title 1' '! * Title 2' 'etc.'
+#
+# Requires programs:
+#   - wmctrl
+#   - notify-send
+#
+# --Kirsle
+# http://sh.kirsle.net/
+
+from sys import argv, exit
+import time
+import subprocess
+
+# Config
+config = dict(
+	# Icon to use
+	icon = "/usr/share/icons/gnome/48x48/status/user-available.png",
+
+	# Title
+	title = "Window Notification",
+)
+
+if len(argv) == 1:
+	print "Usage: window-notify 'Title to watch for' 'etc...'"
+	exit()
+
+titles = argv[1:]
+
+def notify(title):
+	subprocess.call(["notify-send",
+		"-a", __name__,
+		"-i", config['icon'],
+		"Window Notification:",
+		title,
+	])
+
+# Keep track of which titles we currently see, so we don't notify a ton
+# of times for the same title.
+visible = { key: False for key in titles }
+
+# Begin watching.
+while True:
+	time.sleep(0.1)
+	output = subprocess.check_output(["wmctrl", "-l"])
+	for title in titles:
+		if title in output:
+			# Window exists, did we already notify?
+			if not visible[title]:
+				visible[title] = True
+				notify(title)
+		else:
+			visible[title] = False
