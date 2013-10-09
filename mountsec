@@ -17,5 +17,7 @@
 
 sudo modprobe cryptoloop
 sudo modprobe aes
-sudo losetup -e aes /dev/loop0 ~/.container.img
+sudo losetup /dev/loop0 ~/.container.img
+echo "cryptsetup"
+sudo cryptsetup -y luksOpen /dev/loop0 ~/.container.img
 sudo mount -o loop,encryption=aes ~/.container.img /secure
