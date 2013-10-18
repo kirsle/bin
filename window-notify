@@ -35,9 +35,23 @@ if len(argv) == 1:
 
 titles = argv[1:]
 
+def safe_output(args):
+    retval = None
+    try:
+        retval = subprocess.check_output(args)
+    except:
+        pass
+    return retval
+
+def safe_call(args):
+    try:
+        subprocess.call(args)
+    except:
+        pass
+
 def notify(title):
     # Notification pop-up.
-    subprocess.call(["notify-send",
+    safe_call(["notify-send",
         "-a", __name__,
         "-i", config['icon'],
         config['title'],
@@ -45,7 +59,7 @@ def notify(title):
     ])
 
     # Try to add the Urgent hint to the window.
-    subprocess.call(["wmctrl", "-r", title, "-b", "add,demands_attention"])
+    safe_call(["wmctrl", "-r", title, "-b", "add,demands_attention"])
 
 # Keep track of which titles we currently see, so we don't notify a ton
 # of times for the same title.
@@ -54,7 +68,8 @@ visible = { key: False for key in titles }
 # Begin watching.
 while True:
     time.sleep(0.2)
-    output = subprocess.check_output(["wmctrl", "-l"])
+    output = safe_output(["wmctrl", "-l"])
+    if not output: continue
     seen_this_time = dict() # Titles we see on this loop
     for line in output.split("\n"):
         if len(line) == 0:
