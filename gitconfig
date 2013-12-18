@@ -17,3 +17,6 @@
 	pager = true
 	status = auto
 	branch = auto
+
+[push]
+	default = simple
