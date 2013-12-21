@@ -42,16 +42,13 @@ c = dict(
     # Command to run to check for available updates, and the expected status
     # code that indicates updates are available.
     yumcheck = "/usr/bin/yum check-update",    
-    dnfcheck = "/usr/bin/dnf check-update",
 
     # Path to notify-send (set to None if you don't want notifications)
     notify = "/usr/bin/notify-send",
 
     # Command to run for your graphical updater (i.e. yumex, gpk-update-viewer)
     yumgui = "/usr/bin/yumex --update-only",
-    dnfgui = "/usr/bin/xfce4-terminal --hold --execute sudo dnf upgrade"
 )
-dnfpath = "/usr/bin/dnf"
 
 ################################################################################
 # Configuration Section Ends Here                                              #
@@ -108,10 +105,7 @@ for opt in options:
 
 def do_updates():
     """Show your graphical update manager."""
-    if os.path.isfile(dnfpath):
-        subprocess.call(c['dnfgui'], shell=True)
-    else:
-        subprocess.call(c['yumgui'], shell=True)
+    subprocess.call(c['yumgui'], shell=True)
 
 def onClick(widget):
     """Event handler for the tray icon being clicked."""
@@ -138,17 +132,11 @@ def main_loop():
     # Time to check?
     global next_check
     if int(time()) >= next_check:
-        if os.path.isfile(dnfpath):
-            status, output = commands.getstatusoutput(c['dnfcheck'])
-        else:
-            status, output = commands.getstatusoutput(c['yumcheck'])
+        status, output = commands.getstatusoutput(c['yumcheck'])
             
         status = status >> 8
 
-        if os.path.isfile(dnfpath):
-            say("Executed command:", c['dnfcheck'])
-        else:
-            say("Executed command:", c['yumcheck'])
+        say("Executed command:", c['yumcheck'])
 
         say("Result status:", status)
         say("Command output:")
